@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import auth from "../utils/Auth";
+import { Link } from "react-router-dom";
 
-function Register() {
+function Register({ onSubmit }) {
   const [data, setData] = useState({
     email: "",
     password: "",
-    // valid: false,
   });
-
-  const history = useHistory();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,29 +17,7 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!data.email || !data.password) {
-      return;
-    }
-    const { email, password } = data;
-    auth
-      .setRegisterUser(email.toLowerCase(), password)
-      .then((res) => {
-        if (res.statusCode !== 400) {
-          setData({
-            ...data,
-            message: "",
-          });
-          history.push("/sign-in");
-        } else {
-          setData({
-            ...data,
-            message: "Что-то пошло не так!",
-          });
-        }
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
+    onSubmit(data);
   };
   return (
     <div className="auth">
@@ -69,6 +43,7 @@ function Register() {
               type="password"
               placeholder="Пароль"
               name="password"
+              minLength={4}
               required
             />
           </fieldset>

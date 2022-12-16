@@ -11,14 +11,11 @@ class Auth {
     return Promise.reject(`Ошибка: ${response.status}`);
   }
 
-  setRegisterUser(email, password) {
+  setRegisterUser(data) {
     return fetch(`${this.url}/signup`, {
       method: "POST",
       headers: this._headers,
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
+      body: JSON.stringify(data),
     })
       .then((res) => {
         return this._checkResponse(res);
@@ -29,21 +26,18 @@ class Auth {
       });
   }
 
-  setAuthorizeUser(email, password) {
+  setAuthorizeUser(data) {
     return fetch(`${this.url}/signin`, {
       method: "POST",
       headers: this._headers,
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
+      body: JSON.stringify(data),
     })
       .then((res) => {
         return this._checkResponse(res);
       })
       .then((data) => {
         if (data.token) {
-          localStorage.setItem("jwt", data.token);
+          localStorage.setItem("token", data.token);
           return data;
         } else {
           return;

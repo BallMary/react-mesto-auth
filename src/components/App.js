@@ -29,7 +29,8 @@ function App() {
   const [card, setCard] = useState({});
 
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
+  let [email, setEmail] = useState("");
+  const [requestStatus, setRequestStatus] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,7 +39,6 @@ function App() {
         .getAuthenticationUser(token)
         .then((res) => {
           if (res) {
-            console.log(res.data.email);
             setEmail(res.data.email);
             handleLogin();
           }
@@ -90,14 +90,46 @@ function App() {
     return () => document.removeEventListener("keydown", closeEscape);
   });
 
+  const handleLoginSubmit = (data) => {
+    auth
+      .setAuthorizeUser(data)
+      .then((res) => {
+        localStorage.setItem("token", res.token);
+        handleLogin();
+      })
+      .then(() => history.push("/"))
+      .catch((err) => {
+        return console.log(err);
+      });
+  };
+
+  const handleRegistrationSubmit = (data) => {
+    auth
+      .setRegisterUser(data)
+      .then((res) => {
+        if (res) {
+          setRequestStatus(true);
+          handleInfotooltipPopupOpen();
+        }
+      })
+      .then(() => {
+        history.push("/sign-in");
+      })
+      .catch((err) => {
+        console.log(err);
+        setRequestStatus(false);
+        handleInfotooltipPopupOpen();
+      });
+  };
+
   function handleConfirmPopupOpen(card) {
     setIsOpenConfirmPopup(true);
     setCard(card);
   }
 
-  // function handleInfotooltipPopupOpen(card) {
-  //   setIsOpenInfoTooltip(true);
-  // }
+  function handleInfotooltipPopupOpen() {
+    setIsOpenInfoTooltip(true);
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -183,15 +215,20 @@ function App() {
       .catch((err) => console.log(err));
   };
 
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    // setEmail("");
+  };
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header emailUser={email} />
+        <Header emailUser={email} onSignOut={handleSignOut} />
         <Switch>
           <ProtectedRoute
             exact
             path="/"
-            logedIn={loggedIn}
+            loggedIn={loggedIn}
             component={Main}
             onEditProfile={handleEditProfileClick}
             onAddPlace={handleAddPlaceClick}
@@ -202,10 +239,10 @@ function App() {
             onConfirmPopupOpen={handleConfirmPopupOpen}
           />
           <Route path="/sign-up">
-            <Register />
+            <Register onSubmit={handleRegistrationSubmit} />
           </Route>
           <Route path="/sign-in">
-            <Login handleLogin={handleLogin} />
+            <Login onSubmit={handleLoginSubmit} />
           </Route>
           <Route>
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
@@ -214,7 +251,11 @@ function App() {
         <Footer />
       </div>
 
-      <InfoTooltip onClose={closeAllPopups} isOpen={isOpenInfoTooltip} />
+      <InfoTooltip
+        onClose={closeAllPopups}
+        isOpen={isOpenInfoTooltip}
+        isRequestStatus={requestStatus}
+      />
       <EditProfilePopup
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}

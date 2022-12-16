@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import auth from "../utils/Auth";
 
-function Login({ handleLogin }) {
+function Login({ onSubmit }) {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
-
-  const history = useHistory();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,20 +15,7 @@ function Login({ handleLogin }) {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!data.email || !data.password) {
-      return;
-    }
-    const { email, password } = data;
-    auth
-      .setAuthorizeUser(email.toLowerCase(), password)
-      .then((res) => {
-        localStorage.setItem("token", res.token);
-        handleLogin();
-      })
-      .then(() => history.push("/"))
-      .catch((err) => {
-        return console.log(err);
-      });
+    onSubmit(data);
   };
   return (
     <div className="auth">

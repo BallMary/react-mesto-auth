@@ -40,13 +40,7 @@ function PopupWithForm({
           >
             {children}
             <button
-              // onClick={handleSubmit}
-              // disabled={isDisabled}
-              className={
-                valid
-                  ? `popup__button popup__button_${name}`
-                  : "popup__button popup__button_disabled"
-              }
+              className={`popup__button popup__button_${name}`}
               type="submit"
             >
               {textButton}
