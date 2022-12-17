@@ -4,9 +4,7 @@ import unsuccessfully from "../images/unsuccessfully.svg";
 
 function InfoTooltip({ isOpen, onClose, isRequestStatus, text }) {
   return (
-    <section
-      className={`popup popup__info-tool-tip ${isOpen ? "popup_opened" : ""}`}
-    >
+    <section className={`popup ${isOpen ? "popup_opened" : ""}`}>
       <div className="popup__content">
         <button
           className="popup__close-button"
