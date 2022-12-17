@@ -29,8 +29,9 @@ function App() {
   const [card, setCard] = useState({});
 
   const [loggedIn, setLoggedIn] = useState(false);
-  let [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [requestStatus, setRequestStatus] = useState(false);
+  const [textInfoTooltip, setTextInfoTooltip] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -53,26 +54,30 @@ function App() {
   }
 
   useEffect(() => {
-    api
-      .getCards()
-      .then((cardsData) => {
-        setCards(cardsData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (loggedIn === true) {
+      api
+        .getCards()
+        .then((cardsData) => {
+          setCards(cardsData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   useEffect(() => {
-    api
-      .getUserInfo()
-      .then((userData) => {
-        setCurrentUser(userData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (loggedIn === true) {
+      api
+        .getUserInfo()
+        .then((userData) => {
+          setCurrentUser(userData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   useEffect(() => {
     const closeEscape = (evt) => {
@@ -99,7 +104,10 @@ function App() {
       })
       .then(() => history.push("/"))
       .catch((err) => {
-        return console.log(err);
+        setRequestStatus(false);
+        setTextInfoTooltip("Что-то пошло не так! Попробуйте ещё раз.");
+        handleInfotooltipPopupOpen();
+        console.log(err);
       });
   };
 
@@ -109,6 +117,7 @@ function App() {
       .then((res) => {
         if (res) {
           setRequestStatus(true);
+          setTextInfoTooltip("Вы успешно зарегистрировались!");
           handleInfotooltipPopupOpen();
         }
       })
@@ -118,6 +127,7 @@ function App() {
       .catch((err) => {
         console.log(err);
         setRequestStatus(false);
+        setTextInfoTooltip("Что-то пошло не так! Попробуйте ещё раз.");
         handleInfotooltipPopupOpen();
       });
   };
@@ -217,7 +227,6 @@ function App() {
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
-    // setEmail("");
   };
 
   return (
@@ -255,6 +264,7 @@ function App() {
         onClose={closeAllPopups}
         isOpen={isOpenInfoTooltip}
         isRequestStatus={requestStatus}
+        text={textInfoTooltip}
       />
       <EditProfilePopup
         isOpen={isEditProfilePopupOpen}

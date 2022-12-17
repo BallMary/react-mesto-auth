@@ -2,7 +2,7 @@ import React from "react";
 import successfully from "../images/successfully.svg";
 import unsuccessfully from "../images/unsuccessfully.svg";
 
-function InfoTooltip({ isOpen, onClose, isRequestStatus }) {
+function InfoTooltip({ isOpen, onClose, isRequestStatus, text }) {
   return (
     <section
       className={`popup popup__info-tool-tip ${isOpen ? "popup_opened" : ""}`}
@@ -21,11 +21,7 @@ function InfoTooltip({ isOpen, onClose, isRequestStatus }) {
             src={isRequestStatus ? successfully : unsuccessfully}
             alt="sign"
           />
-          <h2 className="popup__title popup__title-status">
-            {isRequestStatus
-              ? "Вы успешно зарегистрировались!"
-              : "Что-то пошло не так! Попробуйте ещё раз."}
-          </h2>
+          <h2 className="popup__title popup__title-status">{text}</h2>
         </div>
       </div>
     </section>

@@ -8,15 +8,7 @@ function PopupWithForm({
   isOpen,
   onClose,
   onSubmit,
-  // disabled,
-  valid,
 }) {
-  // const [isDisabled, setDisabled] = useState(false);
-  // const handleSubmit = () => {
-  //   console.log(onSubmit);
-  //   setDisabled(true);
-  //   onSubmit().finally(() => setDisabled(false));
-  // };
   return (
     <>
       <div
@@ -35,7 +27,6 @@ function PopupWithForm({
           <h2 className={`popup__title popup__title_${name}`}>{title}</h2>
           <form
             className={`popup__container popup__container_${name}`}
-            noValidate
             onSubmit={onSubmit}
           >
             {children}
