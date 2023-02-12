@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import PopupWithForm from "./PopupWithForm";
-// import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
   const [name, setName] = useState("");
@@ -10,7 +9,6 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
   const [errorMessageLink, setErrorMessageLink] = useState("");
 
   const handleSubmit = (e) => {
-    console.log(e);
     e.preventDefault();
     onAddPlace({
       name: name,

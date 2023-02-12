@@ -4,7 +4,7 @@ import DeleteButton from "./DeleteButton";
 
 function Card({ card, onCardClick, onConfirmPopupOpen, onCardLike }) {
   const currentUser = useContext(CurrentUserContext);
-  const isLiked = card.likes.some((i) => i._id === currentUser._id);
+  const isLiked = card.likes.some((i) => i === currentUser.data._id);
   const cardLikeButtonClassName = `element__heart ${
     isLiked ? "element__heart_active" : ""
   }`;
@@ -22,7 +22,7 @@ function Card({ card, onCardClick, onConfirmPopupOpen, onCardLike }) {
   };
   return (
     <article className="element">
-      {currentUser._id === card.owner._id && (
+      {currentUser.data._id === card.owner.toString() && (
         <DeleteButton onClick={handleConfirmPopupOpen} />
       )}
       <img

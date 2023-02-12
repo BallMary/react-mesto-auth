@@ -52,14 +52,15 @@ class Auth {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    }).then((res) => {
+    })
+    .then((res) => {
       return this._checkResponse(res);
     });
   }
 }
 
 const auth = new Auth({
-  baseURL: "https://auth.nomoreparties.co",
+  baseURL: process.env.REACT_APP_API_HTTP,
   headers: {
     "Content-Type": "application/json",
   },

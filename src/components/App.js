@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Route, Switch, Redirect, useHistory } from "react-router-dom";
-import Footer from "./Footer";
-import Header from "./Header";
-import Main from "./Main";
-import ImagePopup from "./ImagePopup";
-import api from "../utils/api";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import EditProfilePopup from "./EditProfilePopup";
-import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup";
-import DeletePopup from "./DeletePopup";
-import Login from "./Login";
-import ProtectedRoute from "./ProtectedRoute";
-import Register from "./Register";
-import auth from "../utils/Auth";
-import InfoTooltip from "./InfoTooltip";
+import React, { useState, useEffect } from 'react';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import Footer from './Footer';
+import Header from './Header';
+import Main from './Main';
+import ImagePopup from './ImagePopup';
+import api from '../utils/api';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
+import DeletePopup from './DeletePopup';
+import Login from './Login';
+import ProtectedRoute from './ProtectedRoute';
+import Register from './Register';
+import auth from '../utils/Auth';
+import InfoTooltip from './InfoTooltip';
 
 function App() {
   const history = useHistory();
@@ -24,17 +24,17 @@ function App() {
   const [isOpenConfirmPopup, setIsOpenConfirmPopup] = useState(false);
   const [isOpenInfoTooltip, setIsOpenInfoTooltip] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({ data: {} });
   const [cards, setCards] = useState([]);
   const [card, setCard] = useState({});
 
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [requestStatus, setRequestStatus] = useState(false);
-  const [textInfoTooltip, setTextInfoTooltip] = useState("");
+  const [textInfoTooltip, setTextInfoTooltip] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
       auth
         .getAuthenticationUser(token)
@@ -45,7 +45,7 @@ function App() {
           }
         })
         .catch((err) => console.log(err))
-        .finally(() => history.push("/"));
+        .finally(() => history.push('/'));
     }
   }, [loggedIn, history, email]);
 
@@ -58,7 +58,7 @@ function App() {
       api
         .getCards()
         .then((cardsData) => {
-          setCards(cardsData);
+          setCards(cardsData.reverse());
         })
         .catch((err) => {
           console.log(err);
@@ -81,7 +81,7 @@ function App() {
 
   useEffect(() => {
     const closeEscape = (evt) => {
-      evt.key === "Escape" && closeAllPopups();
+      evt.key === 'Escape' && closeAllPopups();
     };
     if (
       isAddPlacePopupOpen ||
@@ -90,22 +90,24 @@ function App() {
       selectedCard ||
       card
     ) {
-      document.addEventListener("keydown", closeEscape);
+      document.addEventListener('keydown', closeEscape);
     }
-    return () => document.removeEventListener("keydown", closeEscape);
+    return () => document.removeEventListener('keydown', closeEscape);
   });
 
   const handleLoginSubmit = (data) => {
     auth
       .setAuthorizeUser(data)
       .then((res) => {
-        localStorage.setItem("token", res.token);
+        localStorage.setItem('token', res.token);
+      })
+      .then(() => {
         handleLogin();
       })
-      .then(() => history.push("/"))
+      .then(() => history.push('/'))
       .catch((err) => {
         setRequestStatus(false);
-        setTextInfoTooltip("Что-то пошло не так! Попробуйте ещё раз.");
+        setTextInfoTooltip('Что-то пошло не так! Попробуйте ещё раз.');
         handleInfotooltipPopupOpen();
         console.log(err);
       });
@@ -117,17 +119,17 @@ function App() {
       .then((res) => {
         if (res) {
           setRequestStatus(true);
-          setTextInfoTooltip("Вы успешно зарегистрировались!");
+          setTextInfoTooltip('Вы успешно зарегистрировались!');
           handleInfotooltipPopupOpen();
         }
       })
       .then(() => {
-        history.push("/sign-in");
+        history.push('/sign-in');
       })
       .catch((err) => {
         console.log(err);
         setRequestStatus(false);
-        setTextInfoTooltip("Что-то пошло не так! Попробуйте ещё раз.");
+        setTextInfoTooltip('Что-то пошло не так! Попробуйте ещё раз.');
         handleInfotooltipPopupOpen();
       });
   };
@@ -142,7 +144,7 @@ function App() {
   }
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.some((i) => i === currentUser.data._id);
     api
       .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
@@ -226,17 +228,19 @@ function App() {
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
+    setLoggedIn(false);
+    history.push('/sign-in')
   };
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
+      <div className='page'>
         <Header emailUser={email} onSignOut={handleSignOut} />
         <Switch>
           <ProtectedRoute
             exact
-            path="/"
+            path='/'
             loggedIn={loggedIn}
             component={Main}
             onEditProfile={handleEditProfileClick}
@@ -247,14 +251,14 @@ function App() {
             onCardLike={handleCardLike}
             onConfirmPopupOpen={handleConfirmPopupOpen}
           />
-          <Route path="/sign-up">
+          <Route path='/sign-up'>
             <Register onSubmit={handleRegistrationSubmit} />
           </Route>
-          <Route path="/sign-in">
+          <Route path='/sign-in'>
             <Login onSubmit={handleLoginSubmit} />
           </Route>
           <Route>
-            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            {loggedIn ? <Redirect to='/' /> : <Redirect to='/sign-in' />}
           </Route>
         </Switch>
         <Footer />
